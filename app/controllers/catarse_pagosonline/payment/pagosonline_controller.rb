@@ -1,4 +1,3 @@
-# encoding: utf-8
 module CatarsePagosonline::Payment
   class PagosonlineController < ApplicationController
     skip_before_filter :verify_authenticity_token, :only => [:notifications]
@@ -8,20 +7,21 @@ module CatarsePagosonline::Payment
     
     before_filter :setup_gateway
     
-    SCOPE = "projects.backers.checkout"
+    SCOPE = "projects.contributions.checkout"
 
     layout :false
 
     def review
-      backer = current_user.backs.not_confirmed.find params[:id]
+      # contribution = current_user.backs.not_confirmed.find params[:id]
+      contribution = ::Contribution.find(params[:id])
       # Just to render the review form
       response = @@gateway.payment({
-        reference: '...',
-        description: "#{backer.value} donation to #{backer.project.name}",
-        amount: backer.price_in_cents,
+        reference: "sumame;proyect:#{contribution.project.id};contribution:#{contribution.id};user:#{current_user.id}",
+        description: "#{contribution.value} donation to #{contribution.project.name}",
+        amount: contribution.value,
         currency: 'COP',
-        response_url: payment_success_pagosonline_url(id: backer.id),
-        confirmation_url: payment_notifications_pagosonline_url(id: backer.id),
+        response_url: payment_success_pagosonline_url(id: contribution.id),
+        confirmation_url: payment_notifications_pagosonline_url(id: contribution.id),
         language: 'es'
       })
       @form = response.form do |f|
@@ -30,34 +30,35 @@ module CatarsePagosonline::Payment
     end
 
     def success
-      backer = current_user.backs.find params[:id]
+      #contribution = current_user.backs.find params[:id]
+      contribution = ::Contribution.find(params[:id])
       begin
         response = @@gateway.Response.new(params)
         if response.valid?
-          backer.update_attribute :payment_method, 'PagosOnline'
-          backer.update_attribute :payment_token, response.transaccion_id
+          contribution.update_attribute :payment_method, 'PagosOnline'
+          contribution.update_attribute :payment_token, response.transaccion_id
 
-          proccess!(backer, response)
+          proccess!(contribution, response)
 
           pagosonline_flash_success
-          redirect_to main_app.project_backer_path(project_id: backer.project.id, id: backer.id)
+          redirect_to main_app.project_contribution_path(project_id: contribution.project.id, id: contribution.id)
         else
           pagosonline_flash_error
-          return redirect_to main_app.new_project_backer_path(backer.project)  
+          return redirect_to main_app.new_project_contribution_path(contribution.project)  
         end
       rescue Exception => e
         ::Airbrake.notify({ :error_class => "PagosOnline Error", :error_message => "PagosOnline Error: #{e.inspect}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
         pagosonline_flash_error
-        return redirect_to main_app.new_project_backer_path(backer.project)
+        return redirect_to main_app.new_project_contribution_path(contribution.project)
       end
     end
 
     def notifications
-      backer = current_user.backs.find params[:id]
+      contribution = current_user.backs.find params[:id]
       response = @@gateway.Response.new(params)
       if response.valid?
-        proccess!(backer, response)
+        proccess!(contribution, response)
         render status: 200, nothing: true
       else
         render status: 404, nothing: true
@@ -70,15 +71,15 @@ module CatarsePagosonline::Payment
 
     protected
 
-    def proccess!(backer, response)
-      notification = backer.payment_notifications.new({
+    def proccess!(contribution, response)
+      notification = contribution.payment_notifications.new({
         extra_data: response.params
       })
 
       if response.success?
-        backer.confirm!  
+        contribution.confirm!  
       elsif response.failure?
-        backer.pendent!
+        contribution.pendent!
       end
     end
 
