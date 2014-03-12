@@ -33,7 +33,8 @@ module CatarsePagosonline::Payment
       #contribution = current_user.backs.find params[:id]
       contribution = ::Contribution.find(params[:id])
       begin
-        response = @@gateway.Response.new(params)
+        # response = @@gateway.Response.new(params)
+        response = Pagosonline::Response.new(params)
         if response.valid?
           contribution.update_attribute :payment_method, 'PagosOnline'
           contribution.update_attribute :payment_token, response.transaccion_id
@@ -47,7 +48,7 @@ module CatarsePagosonline::Payment
           return redirect_to main_app.new_project_contribution_path(contribution.project)  
         end
       rescue Exception => e
-        ::Airbrake.notify({ :error_class => "PagosOnline Error", :error_message => "PagosOnline Error: #{e.inspect}", :parameters => params}) rescue nil
+        # ::Airbrake.notify({ :error_class => "PagosOnline Error", :error_message => "PagosOnline Error: #{e.inspect}", :parameters => params}) rescue nil
         Rails.logger.info "-----> #{e.inspect}"
         pagosonline_flash_error
         return redirect_to main_app.new_project_contribution_path(contribution.project)
@@ -57,7 +58,8 @@ module CatarsePagosonline::Payment
     def notifications
       # contribution = current_user.backs.find params[:id]
       contribution = ::Contribution.find(params[:id])
-      response = @@gateway.Response.new(params)
+      response = Pagosonline::Response.new(params)
+      # response = @@gateway.Response.new(params)
       if response.valid?
         proccess!(contribution, response)
         render status: 200, nothing: true
@@ -65,7 +67,7 @@ module CatarsePagosonline::Payment
         render status: 404, nothing: true
       end
     rescue Exception => e
-      ::Airbrake.notify({ :error_class => "PagosOnline Notification Error", :error_message => "PagosOnline Notification Error: #{e.inspect}", :parameters => params}) rescue nil
+      # ::Airbrake.notify({ :error_class => "PagosOnline Notification Error", :error_message => "PagosOnline Notification Error: #{e.inspect}", :parameters => params}) rescue nil
       Rails.logger.info "-----> #{e.inspect}"
       render status: 404, nothing: true
     end
