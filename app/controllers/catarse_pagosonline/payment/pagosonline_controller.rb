@@ -34,7 +34,7 @@ module CatarsePagosonline::Payment
       contribution = ::Contribution.find(params[:id])
       begin
         # response = @@gateway.Response.new(params)
-        response = Pagosonline::Response.new(params)
+        response = Pagosonline::Response.new(@@gateway, params)
         if response.valid?
           contribution.update_attribute :payment_method, 'PagosOnline'
           contribution.update_attribute :payment_token, response.transaccion_id
@@ -49,7 +49,7 @@ module CatarsePagosonline::Payment
         end
       rescue Exception => e
         # ::Airbrake.notify({ :error_class => "PagosOnline Error", :error_message => "PagosOnline Error: #{e.inspect}", :parameters => params}) rescue nil
-        Rails.logger.info "-----> #{e.inspect}"
+        Rails.logger.info "--success error-----> #{e.inspect}"
         pagosonline_flash_error
         return redirect_to main_app.new_project_contribution_path(contribution.project)
       end
@@ -58,7 +58,7 @@ module CatarsePagosonline::Payment
     def notifications
       # contribution = current_user.backs.find params[:id]
       contribution = ::Contribution.find(params[:id])
-      response = Pagosonline::Response.new(params)
+      response = Pagosonline::Response.new(@@gateway, params)
       # response = @@gateway.Response.new(params)
       if response.valid?
         proccess!(contribution, response)
@@ -68,7 +68,7 @@ module CatarsePagosonline::Payment
       end
     rescue Exception => e
       # ::Airbrake.notify({ :error_class => "PagosOnline Notification Error", :error_message => "PagosOnline Notification Error: #{e.inspect}", :parameters => params}) rescue nil
-      Rails.logger.info "-----> #{e.inspect}"
+      Rails.logger.info "--notifications error-----> #{e.inspect}"
       render status: 404, nothing: true
     end
 
@@ -95,16 +95,14 @@ module CatarsePagosonline::Payment
     end
 
     def setup_gateway
-      if ::Configuration[:pagosonline_username] and ::Configuration[:pagosonline_key] and ::Configuration[:pagosonline_merchant_id] and ::Configuration[:pagosonline_account_id]
+      if ::Configuration[:pagosonline_key] and ::Configuration[:pagosonline_account_id]
         @@gateway ||= Pagosonline::Client.new({
-          merchant_id: ::Configuration[:pagosonline_merchant_id],
           account_id: ::Configuration[:pagosonline_account_id],
-          login: ::Configuration[:pagosonline_username],
           key: ::Configuration[:pagosonline_key],
           test: true
         })
       else
-        raise "[PagosOnline] pagosonline_username, pagosonline_key, pagosonline_merchant_id and pagosonline_account_id are required to make requests to PagosOnline"
+        raise "[PagosOnline] pagosonline_key and pagosonline_account_id are required to make requests to PagosOnline"
       end
     end
 
