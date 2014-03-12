@@ -55,7 +55,8 @@ module CatarsePagosonline::Payment
     end
 
     def notifications
-      contribution = current_user.backs.find params[:id]
+      # contribution = current_user.backs.find params[:id]
+      contribution = ::Contribution.find(params[:id])
       response = @@gateway.Response.new(params)
       if response.valid?
         proccess!(contribution, response)
