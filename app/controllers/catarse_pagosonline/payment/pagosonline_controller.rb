@@ -35,14 +35,20 @@ module CatarsePagosonline::Payment
       begin
         # response = @@gateway.Response.new(params)
         response = Pagosonline::Response.new(@@gateway, params)
-        puts "*****#{response.inspect}***"
+        # puts "*****#{response.inspect}***"
         if response.valid?
           contribution.update_attribute :payment_method, 'PagosOnline'
           contribution.update_attribute :payment_token, response.transaccion_id
 
           proccess!(contribution, response)
 
-          pagosonline_flash_success
+          unless response.success?
+            pagosonline_error response.answer_message
+          else
+            pagosonline_flash_success  
+          end
+          
+
           redirect_to main_app.project_contribution_path(project_id: contribution.project.id, id: contribution.id)
         else
           puts "************ NO ES VALIDA LA FIRMA"
@@ -104,6 +110,10 @@ module CatarsePagosonline::Payment
       end
     end
 
+    def pagosonline_error(error_message)
+      flash[:failure] = t('pagosonline_error', scope: SCOPE) << error_message
+    end
+    
     def pagosonline_flash_error
       flash[:failure] = t('pagosonline_error', scope: SCOPE)
     end
