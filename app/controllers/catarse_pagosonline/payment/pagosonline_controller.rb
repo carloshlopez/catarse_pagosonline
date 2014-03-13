@@ -45,6 +45,12 @@ module CatarsePagosonline::Payment
           pagosonline_flash_success
           redirect_to main_app.project_contribution_path(project_id: contribution.project.id, id: contribution.id)
         else
+          puts "************ NO ES VALIDA LA FIRMA"
+          datos = [response.client.key,response.client.account_id, response.reference,("%.2f" % response.amount), response.currency, response.state_code].join("~")
+        signa = Digest::MD5.hexdigest(datos)
+
+
+        puts "*******valores del response: #{params[:firma].upcase} debe ser igual a #{signa.upcase} que sale de firmar #{datos}"
           pagosonline_flash_error
           return redirect_to main_app.new_project_contribution_path(contribution.project)  
         end
