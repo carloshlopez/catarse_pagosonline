@@ -60,18 +60,18 @@ module CatarsePagosonline::Payment
       contribution = ::Contribution.find(params[:id])
       response = Pagosonline::Response.new(@@gateway, params)
       # response = @@gateway.Response.new(params)
-      # puts "88888 VAMOS A ENTRAR A VALIDAR esta condicion(#{response.valid?})"
+       puts "88888 VAMOS A ENTRAR A VALIDAR esta condicion(#{response.valid?})"
       if response.valid?
-        # puts "******* VAMOS A VALIDAR :)"
+        puts "******* VAMOS A VALIDAR :)"
         proccess!(contribution, response)
         render status: 200, nothing: true
       else
-        # puts "************ NO ES VALIDA LA FIRMA"
+        puts "************ NO ES VALIDA LA FIRMA"
         datos = [response.client.key,response.client.account_id, response.reference,("%.1f" % response.amount), response.currency, response.state_code].join("~")
         signa = Digest::MD5.hexdigest(datos)
 
 
-        # puts "*******valores del response:   #{response.signature} debe ser igual a #{params[:firma]} y debe ser igual a #{signa} que sale de firmar #{datos}"
+        puts "*******valores del response:   #{response.signature} debe ser igual a #{params[:firma]} y debe ser igual a #{signa} que sale de firmar #{datos}"
 
         render status: 404, nothing: true
       end
