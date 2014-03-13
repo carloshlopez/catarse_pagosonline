@@ -6,8 +6,8 @@ Pagosonline integration with [Catarse](http://github.com/catarse/catarse) crowdf
 
 Add this lines to your Catarse application's Gemfile:
 
-    gem 'pagosonline', git: 'git://github.com/sagmor/pagosonline.git'
-    gem 'catarse_pagosonline'
+    gem 'pagosonline', git: 'git://github.com/carloshlopez/pagosonline.git'
+    gem 'catarse_pagosonline', git: 'git://github.com/carloshlopez/pagosonline.git'
 
 And then execute:
 
@@ -23,16 +23,20 @@ Configure the routes for your Catarse application. Add the following lines in th
 
 Create this configurations into Catarse database:
 
-    pagosonline_merchant, pagosonline_ipn_password and pagosonline_country_id
+    pagosonline_test,  pagosonline_key and pagosonline_account_id
+
+    pagosonline_test if true will be on test mode, false is production mode
+    pagosonline_key you will find it in your pagosonline admin module
+    pagosonline_account_id you'll get it from customer support
 
 In Rails console, run this:
 
-    Configuration.create!(name: "pagosonline_merchant", value: "123456")
-    Configuration.create!(name: "pagosonline_country_id", value: "2")
-    Configuration.create!(name: "pagosonline_ipn_password", value: "ipn_password")
-    Configuration.create!(name: "pagosonline_currency", value: "clp")
+    Configuration.create!(name: "pagosonline_test", value: true) 
+    Configuration.create!(name: "pagosonline_key", value: "sdf4fs34442")
+    Configuration.create!(name: "pagosonline_account_id", value: "2222")
 
   Currencies:
+    "COP" -> default
     "ars"
     "mxn"
     "clp"
@@ -43,11 +47,11 @@ In Rails console, run this:
 
 Clone the repository:
 
-    $ git clone git://github.com/gustavoguichard/catarse_pagosonline.git
+    $ git clone git://github.com/carloshlopez/catarse_pagosonline.git
 
 Add the catarse code into test/dummy:
 
-    $ git submodule add git://github.com/catarse_pagosonline/catarse.git test/dummy
+    $ git submodule add git://github.com/carloshlopez/catarse.git test/dummy
 
 Copy the Catarse's gems to Gemfile:
 

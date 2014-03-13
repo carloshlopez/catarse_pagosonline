@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module CatarsePagosonline::Payment
   class PagosonlineController < ApplicationController
     skip_before_filter :verify_authenticity_token, :only => [:notifications]
@@ -25,7 +27,7 @@ module CatarsePagosonline::Payment
         language: 'es'
       })
       @form = response.form do |f|
-        "<input type=\"submit\" value=\"Pagar\" />"
+        "<input type=\"submit\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" class=\"btn btn-info btn-large\"/>"
       end
     end
 
@@ -123,14 +125,14 @@ module CatarsePagosonline::Payment
     end
 
     def setup_gateway
-      if ::Configuration[:pagosonline_key] and ::Configuration[:pagosonline_account_id]
+      if ::Configuration[:pagosonline_key] and ::Configuration[:pagosonline_account_id] and ::Configuration[:pagosonline_test]
         @@gateway ||= Pagosonline::Client.new({
           account_id: ::Configuration[:pagosonline_account_id],
           key: ::Configuration[:pagosonline_key],
-          test: true
+          test: ::Configuration[:pagosonline_test] || true
         })
       else
-        raise "[PagosOnline] pagosonline_key and pagosonline_account_id are required to make requests to PagosOnline"
+        raise "[PagosOnline] pagosonline_test and pagosonline_key and pagosonline_account_id are required to make requests to PagosOnline"
       end
     end
 
