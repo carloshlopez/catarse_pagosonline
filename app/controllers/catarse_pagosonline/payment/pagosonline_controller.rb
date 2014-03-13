@@ -16,7 +16,7 @@ module CatarsePagosonline::Payment
       contribution = ::Contribution.find(params[:id])
       # Just to render the review form
       response = @@gateway.payment({
-        reference: "sumame-proyect:#{contribution.project.id}-contribution:#{contribution.id}-user:#{current_user.id}",
+        reference: "sumame-proyect-#{contribution.project.id}-contribution-#{contribution.id}-user-#{current_user.id}",
         description: "#{contribution.value} donation to #{contribution.project.name}",
         amount: contribution.value,
         currency: 'COP',
@@ -35,6 +35,7 @@ module CatarsePagosonline::Payment
       begin
         # response = @@gateway.Response.new(params)
         response = Pagosonline::Response.new(@@gateway, params)
+        puts "*****#{response.inspect}***"
         if response.valid?
           contribution.update_attribute :payment_method, 'PagosOnline'
           contribution.update_attribute :payment_token, response.transaccion_id
