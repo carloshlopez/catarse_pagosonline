@@ -67,11 +67,11 @@ module CatarsePagosonline::Payment
         render status: 200, nothing: true
       else
         puts "************ NO ES VALIDA LA FIRMA"
-        datos = [response.client.key,response.client.account_id, response.reference,("%.1f" % response.amount), response.currency, response.state_code].join("~")
+        datos = [response.client.key,response.client.account_id, response.reference,response.amount, response.currency, response.state_code].join("~")
         signa = Digest::MD5.hexdigest(datos)
 
 
-        puts "*******valores del response:   #{response.signature} debe ser igual a #{params[:firma]} y debe ser igual a #{signa} que sale de firmar #{datos}"
+        puts "*******valores del response: #{params[:firma]} debe ser igual a #{signa} que sale de firmar #{datos}"
 
         render status: 404, nothing: true
       end
