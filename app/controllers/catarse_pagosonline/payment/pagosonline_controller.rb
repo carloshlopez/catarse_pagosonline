@@ -71,7 +71,7 @@ module CatarsePagosonline::Payment
         signa = Digest::MD5.hexdigest(datos)
 
 
-        puts "*******valores del response: #{params[:firma]} debe ser igual a #{signa} que sale de firmar #{datos}"
+        puts "*******valores del response: #{params[:firma].upcase} debe ser igual a #{signa.upcase} que sale de firmar #{datos}"
 
         render status: 404, nothing: true
       end
