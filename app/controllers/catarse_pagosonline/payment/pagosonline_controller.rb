@@ -67,7 +67,7 @@ module CatarsePagosonline::Payment
         render status: 200, nothing: true
       else
         puts "************ NO ES VALIDA LA FIRMA"
-        datos = [response.client.key,response.client.account_id, response.reference,response.amount, response.currency, response.state_code].join("~")
+        datos = [response.client.key,response.client.account_id, response.reference,("%.2f" % response.amount), response.currency, response.state_code].join("~")
         signa = Digest::MD5.hexdigest(datos)
 
 

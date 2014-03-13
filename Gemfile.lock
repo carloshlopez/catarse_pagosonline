@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git://github.com/carloshlopez/pagosonline.git
-  revision: 792c7566157aa77930150f4e4770b63ac57cde47
+  revision: 3d105b505b9e73f3ff32f2f3edc5c88ea23fecd5
   specs:
     pagosonline (0.0.1)
       hashie
