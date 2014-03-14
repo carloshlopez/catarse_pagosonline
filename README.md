@@ -25,13 +25,13 @@ Create this configurations into Catarse database:
 
     pagosonline_test,  pagosonline_key and pagosonline_account_id
 
-    pagosonline_test if true will be on test mode, false is production mode
+    pagosonline_test if "1" will be on test mode
     pagosonline_key you will find it in your pagosonline admin module
     pagosonline_account_id you'll get it from customer support
 
 In Rails console, run this:
 
-    Configuration.create!(name: "pagosonline_test", value: true) 
+    Configuration.create!(name: "pagosonline_test", value: "1") 
     Configuration.create!(name: "pagosonline_key", value: "sdf4fs34442")
     Configuration.create!(name: "pagosonline_account_id", value: "2222")
 

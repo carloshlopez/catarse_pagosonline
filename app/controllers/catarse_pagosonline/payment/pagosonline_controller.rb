@@ -129,7 +129,7 @@ module CatarsePagosonline::Payment
         @@gateway ||= Pagosonline::Client.new({
           account_id: ::Configuration[:pagosonline_account_id],
           key: ::Configuration[:pagosonline_key],
-          test: ::Configuration[:pagosonline_test].match(/(true|t|yes|y|1)$/i) != nil || true
+          test: ::Configuration[:pagosonline_test].to_i
         })
       else
         raise "[PagosOnline] pagosonline_test and pagosonline_key and pagosonline_account_id are required to make requests to PagosOnline"
