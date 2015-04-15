@@ -27,7 +27,7 @@ module CatarsePagosonline::Payment
         language: 'es'
       })
       @form = response.form do |f|
-        "<input type=\"submit\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" class=\"btn btn-info btn-large\"/>"
+        "<input type=\"submit\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" style=\"padding:3px;background-color: #4CC5D7;color: #fff;\"/>"
       end
     end
 
