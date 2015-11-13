@@ -31,7 +31,10 @@ module CatarsePagosonline::Payment
           "<input type=\"submit\" title=\"Súmate a este proyecto haciendo click aquí\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" style=\"padding:10px;background-color: #4CC5D7;color: #fff;border-radius: 10px;cursor: pointer;\"/>"
         end
       else
-        "Este proyecto no acepta contribuiones por este medio de pago."
+        @form = response.form do |f|
+          "Este proyecto no acepta contribuiones por este medio de pago."
+        end
+        
       end
     end
 
