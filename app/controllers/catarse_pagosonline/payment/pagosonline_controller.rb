@@ -16,6 +16,7 @@ module CatarsePagosonline::Payment
     def review
       # contribution = current_user.backs.not_confirmed.find params[:id]
       contribution = ::Contribution.find(params[:id])
+      @show = true
       if contribution.project.accepts_pagosonline?
         # Just to render the review form
         response = @@gateway.payment({
@@ -31,10 +32,8 @@ module CatarsePagosonline::Payment
           "<input type=\"submit\" title=\"Súmate a este proyecto haciendo click aquí\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" style=\"padding:10px;background-color: #4CC5D7;color: #fff;border-radius: 10px;cursor: pointer;\"/>"
         end
       else
-        @form = response.form do |f|
-          "Este proyecto no acepta contribuiones por este medio de pago."
-        end
-        
+        @show = false
+        @form = "<p>Este proyecto no acepta contribuiones por este medio de pago.</p>"        
       end
     end
 
