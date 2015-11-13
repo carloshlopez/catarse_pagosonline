@@ -16,18 +16,22 @@ module CatarsePagosonline::Payment
     def review
       # contribution = current_user.backs.not_confirmed.find params[:id]
       contribution = ::Contribution.find(params[:id])
-      # Just to render the review form
-      response = @@gateway.payment({
-        reference: "sumame-proyect-#{contribution.project.id}-contribution-#{contribution.id}-user-#{current_user.id}",
-        description: "#{contribution.value} donation to #{contribution.project.name}",
-        amount: contribution.value,
-        currency: 'COP',
-        response_url: payment_success_pagosonline_url(id: contribution.id),
-        confirmation_url: payment_notifications_pagosonline_url(id: contribution.id),
-        language: 'es'
-      })
-      @form = response.form do |f|
-        "<input type=\"submit\" title=\"Súmate a este proyecto haciendo click aquí\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" style=\"padding:10px;background-color: #4CC5D7;color: #fff;border-radius: 10px;cursor: pointer;\"/>"
+      if contribution.project.accepts_pagosonline?
+        # Just to render the review form
+        response = @@gateway.payment({
+          reference: "sumame-proyect-#{contribution.project.id}-contribution-#{contribution.id}-user-#{current_user.id}",
+          description: "#{contribution.value} donation to #{contribution.project.name}",
+          amount: contribution.value,
+          currency: 'COP',
+          response_url: payment_success_pagosonline_url(id: contribution.id),
+          confirmation_url: payment_notifications_pagosonline_url(id: contribution.id),
+          language: 'es'
+        })
+        @form = response.form do |f|
+          "<input type=\"submit\" title=\"Súmate a este proyecto haciendo click aquí\" value=\"APOYA A TRAVÉS DE PAGOS ON LINE\" style=\"padding:10px;background-color: #4CC5D7;color: #fff;border-radius: 10px;cursor: pointer;\"/>"
+        end
+      else
+        "Este proyecto no acepta contribuiones por este medio de pago."
       end
     end
 
