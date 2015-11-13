@@ -33,7 +33,7 @@ module CatarsePagosonline::Payment
         end
       else
         @show = false
-        @form = "<p>Este proyecto no acepta contribuiones por este medio de pago.</p>"        
+        @form = "<p>Este proyecto no acepta contribuiones por Pagos On Line.</p>"
       end
     end
 
